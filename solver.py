@@ -1,31 +1,35 @@
 import math
 
+percent = float(input("Please enter the rate of growth (in percent per year):"))
+years = int(input("Please enter the number of years:"))
+ratio = float(input("Please enter the initial ratio of government debt to GDP:"))
+
 current = {
     "yd": 1.0,
     "alpha1": 0.88,
-    "v": 1.0,
-    "v*": 1.0,
+    "v": ratio,
+    "v*": ratio,
     "alpha3": 1,
     "px": 0.5,
     "T": 0.2,
     "Y": 1.0,
-    "V": 1.0,
+    "V": ratio,
     "rr": 0.03,
     "pi": 0.01,
     "y": 1,
     "t": 0.2,
     "gT": 0.2,
-    "deltagd": 0.1,
+    "deltagd": 0,
     "GT": 0.1,
     "G": 1.0,
     "DEF": 0.1,
-    "GD": 1.0,
+    "GD": ratio,
     "g": 0.1,
     "p": 1.0,
 }
 
 params = {
-    "gr": 0.025,
+    "gr": percent/100,
     "theta": 0.25,
     "alpha2": 0.2,
     "alpha10": 0.9,
@@ -71,12 +75,22 @@ def f():
         errorsquare += (next[key] - current[key])**2
         current[key] = next[key]
     
-    print('Error: ')
-    print(math.sqrt(errorsquare))
+    return math.sqrt(errorsquare)
 
-for x in range(100):
-    f()
+iterations = 0
+error = 1
 
-print(current)
+for year in range(years):
+    while iterations < 100 and error > 0.00000001:
+        error = f()
+        iterations += 1
+    for key in current:
+        last[key] = current[key]
+    iterations = 0
+    error = 1
 
+ratio = current["V"]/current["Y"]
+steady = ((1 - current["alpha1"])*(1 - params["theta"])*(1 + params["gr"]))/(params["gr"] + params["alpha2"] + (1 - current["alpha1"])*params["theta"]*current["pi"]/(1+current["pi"]) - (1 - current["alpha1"])*(1 - params["theta"])*current["rr"])
 
+print('After', years, 'years, the ratio of government debt to GDP is', ratio)
+print('Steady value:', steady)
