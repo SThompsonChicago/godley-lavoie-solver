@@ -1,21 +1,35 @@
 import math
 
+print('''
+*************************************************************************
+************************ GOVERNMENT DEBT TRACKER ************************
+*************************************************************************
+
+This is a simple command-line interface that allows the user to reproduce 
+simulations from Wynne Godley and Marc Lavoie's paper 'Fiscal Policy in a 
+Stock-Flow Consistent (SFC) Model', published in the Journal of Post 
+Keynesian Economics (2007, vol. 30, no. 1). Based on inputs provided by
+the user, it gives projected values for the ratio of government debt to
+gross domestic product (GDP).
+''')
+
 percent = float(input("Enter the percentage annual GDP growth rate: ") or 2.5)
 years = int(input("Enter the number of years: ") or 10)
-ratio = float(input("Enter the initial ratio of government debt to GDP: ") or 0.40919)
+ratio = float(input("Enter the initial percentage ratio of government debt to GDP: ") or 40.919)
 inflation = float(input("Enter the percentage rate of inflation per year: ") or 2)
 interest = float(input("Enter the annual nominal percent interest rate on government debt: ") or 3)
+tax = float(input("Enter the average percentage income tax rate: ") or 25)
 
 current = {
     "yd": 1.0,
     "alpha1": 0.88,
-    "v": ratio,
-    "v*": ratio,
+    "v": ratio/100,
+    "v*": ratio/100,
     "alpha3": 1.0,
     "px": 0.5,
     "T": 0.2,
     "Y": 1.0,
-    "V": ratio,
+    "V": ratio/100,
     "rr": 0.03,
     "pi": 0.01,
     "y": 1.0,
@@ -25,14 +39,14 @@ current = {
     "GT": 0.1,
     "G": 1.0,
     "DEF": 0.1,
-    "GD": ratio,
+    "GD": ratio/100,
     "g": 0.1,
     "p": 1.0,
 }
 
 params = {
     "gr": percent/100,
-    "theta": 0.25,
+    "theta": tax/100,
     "alpha2": 0.2,
     "alpha10": 0.9,
     "iota": 2.0,
