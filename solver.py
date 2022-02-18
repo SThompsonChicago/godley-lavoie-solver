@@ -1,25 +1,27 @@
 import math
 
-percent = float(input("Please enter the rate of growth (in percent per year):"))
-years = int(input("Please enter the number of years:"))
-ratio = float(input("Please enter the initial ratio of government debt to GDP:"))
+percent = float(input("Enter the percentage annual GDP growth rate: ") or 2.5)
+years = int(input("Enter the number of years: ") or 10)
+ratio = float(input("Enter the initial ratio of government debt to GDP: ") or 0.40919)
+inflation = float(input("Enter the percentage rate of inflation per year: ") or 2)
+interest = float(input("Enter the annual nominal percent interest rate on government debt: ") or 3)
 
 current = {
     "yd": 1.0,
     "alpha1": 0.88,
     "v": ratio,
     "v*": ratio,
-    "alpha3": 1,
+    "alpha3": 1.0,
     "px": 0.5,
     "T": 0.2,
     "Y": 1.0,
     "V": ratio,
     "rr": 0.03,
     "pi": 0.01,
-    "y": 1,
+    "y": 1.0,
     "t": 0.2,
     "gT": 0.2,
-    "deltagd": 0,
+    "deltagd": 0.0,
     "GT": 0.1,
     "G": 1.0,
     "DEF": 0.1,
@@ -33,8 +35,9 @@ params = {
     "theta": 0.25,
     "alpha2": 0.2,
     "alpha10": 0.9,
-    "iota": 0.2,
-    "r": 0.03
+    "iota": 2.0,
+    "r": interest/100,
+    "pi": inflation/100,
 }
 
 last = current.copy()
@@ -48,7 +51,7 @@ def f():
     global params
 
     next["yd"] = current["y"] + current["rr"] * last["v"] - current["t"]
-    next["alpha1"] = params["alpha10"] - params["iota"] * last["rr"]
+    next["alpha1"] = params["alpha10"] - params["iota"] * current["rr"]
     next["v"] = last["v"] + params["alpha2"] * (current["v*"] - last["v"])
     next["v*"] = current["alpha3"] * current["yd"]
     next["alpha3"] = (1 - current["alpha1"])/params["alpha2"]
@@ -57,7 +60,7 @@ def f():
     next["Y"] = current["y"] * current["p"]
     next["V"] = current["v"] * current["p"]
     next["rr"] = (1 + params["r"])/(1 + current["pi"]) - 1
-    next["pi"] = 0.02
+    next["pi"] = params["pi"]
     next["y"] = last["y"] * (1 + params["gr"])
     next["t"] = current["T"]/current["p"]
     next["gT"] = current["g"] + current["rr"] * last["GD"]/last["p"]
@@ -67,7 +70,7 @@ def f():
     next["DEF"] = current["GT"] - current["T"]
     next["GD"] = last["GD"] + current["DEF"]
     next["g"] = current["y"] - current["px"]
-    next["p"] = current["pi"] * last["p"] + last["p"]
+    next["p"] = last["p"] * (1 + current["pi"])
 
     errorsquare = 0
 
@@ -92,5 +95,6 @@ for year in range(years):
 ratio = current["V"]/current["Y"]
 steady = ((1 - current["alpha1"])*(1 - params["theta"])*(1 + params["gr"]))/(params["gr"] + params["alpha2"] + (1 - current["alpha1"])*params["theta"]*current["pi"]/(1+current["pi"]) - (1 - current["alpha1"])*(1 - params["theta"])*current["rr"])
 
-print('After', years, 'years, the ratio of government debt to GDP is', ratio)
-print('Steady value:', steady)
+print('\nAfter %r years, the ratio of government debt to GDP will be %s%%.' % (years, round(100*ratio, 1)))
+print('The steady-state ratio of government debt to GDP is: %s%%.' % round(100*steady, 1))
+print('')
